@@ -45,16 +45,15 @@ class _StatisticPageState extends State<StatisticPage> {
           child: MediaQuery.of(context).orientation == Orientation.landscape ? Row(
             children: [
               Expanded(child: getUIOne()),
-              Expanded(child: SingleChildScrollView(child: getUITwo())),
+              Expanded(child: getUITwo()),
+              Expanded(child: getUIThree()),
 
             ],
           ): Column(
             children: [
               getUIOne(),
               getUITwo(),
-
-
-
+              getUIThree(),
 
 
 
@@ -67,6 +66,8 @@ class _StatisticPageState extends State<StatisticPage> {
       ),
     );
   }
+
+
 
 
 
@@ -96,8 +97,6 @@ class _StatisticPageState extends State<StatisticPage> {
         }
 
         return filteredData.isNotEmpty ?
-        Column(
-        children: [
           Padding(
             padding: const EdgeInsets.only(left:25.0),
             child: AspectRatio(
@@ -134,54 +133,8 @@ class _StatisticPageState extends State<StatisticPage> {
 
 
             ),
-          ),
-            SizedBox(height: 16,),
+          )
 
-            Expanded(
-              child: BlocBuilder<ExpenseBloc,ExpenseState>(builder: (_,state){
-              if(state is ExpenseLoadingState){
-              return Center(child: CircularProgressIndicator());
-              } else if (state is ExpenseErrorState){
-              return Center(child: Text(state.errMsg),);
-              } else if (state is ExpenseLoadedState){
-              
-              filterDataCategoryWise(expenseList: state.mExp);
-              
-              return filteredCategory.isNotEmpty ?
-              
-              ListView.builder(
-              
-              itemCount: filteredCategory.length,
-              itemBuilder: (_,index){
-              
-              final category = filteredCategory[index];
-              
-              return Card(
-              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-              leading: Image.asset(
-              AppConstants.mCat.where((exp){
-              return exp.id == category.id;
-              }).toList()[0].imgPath,
-              fit: BoxFit.contain,height: 30,width: 30,),
-              title: Text(category.title, style: TextStyle(fontSize: 18)),
-              trailing: Text(
-              "Total: \$${category.amount.toStringAsFixed(2)}",
-              style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),
-              )));
-              
-              
-              }) : Center(
-              child: Text("No Expenses yet!!"),
-              );
-              
-              }
-              return Container();
-              
-              }),
-            ),
-        ],
-                )
 
             : Center(
           child: Text("No Expenses yet!!"),
@@ -275,6 +228,54 @@ class _StatisticPageState extends State<StatisticPage> {
         ),
 
       ],
+    );
+  }
+
+
+
+  Widget getUIThree(){
+    return  Expanded(
+      child: BlocBuilder<ExpenseBloc,ExpenseState>(builder: (_,state){
+        if(state is ExpenseLoadingState){
+          return Center(child: CircularProgressIndicator());
+        } else if (state is ExpenseErrorState){
+          return Center(child: Text(state.errMsg),);
+        } else if (state is ExpenseLoadedState){
+
+          filterDataCategoryWise(expenseList: state.mExp);
+
+          return filteredCategory.isNotEmpty ?
+
+          ListView.builder(
+
+              itemCount: filteredCategory.length,
+              itemBuilder: (_,index){
+
+                final category = filteredCategory[index];
+
+                return Card(
+                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: ListTile(
+                        leading: Image.asset(
+                          AppConstants.mCat.where((exp){
+                            return exp.id == category.id;
+                          }).toList()[0].imgPath,
+                          fit: BoxFit.contain,height: 30,width: 30,),
+                        title: Text(category.title, style: TextStyle(fontSize: 18)),
+                        trailing: Text(
+                          "Total: \$${category.amount.toStringAsFixed(2)}",
+                          style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),
+                        )));
+
+
+              }) : Center(
+            child: Text("No Expenses yet!!"),
+          );
+
+        }
+        return Container();
+
+      }),
     );
   }
 /*
