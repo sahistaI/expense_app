@@ -42,26 +42,32 @@ class _StatisticPageState extends State<StatisticPage> {
       body: SafeArea(
         child:Padding(
           padding: const EdgeInsets.only(top:10.0),
-          child: MediaQuery.of(context).orientation == Orientation.landscape ? Row(
+          child: MediaQuery.of(context).orientation == Orientation.landscape ?
+          Row(
             children: [
               Expanded(child: getUIOne()),
-              Expanded(child: getUITwo()),
-              Expanded(child: getUIThree()),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      getUITwo(),
+                      getUIThree()
+                    ],
+                  ),
+                ),
+              )
 
             ],
-          ): Column(
+          ):
+          ListView(
             children: [
               getUIOne(),
               getUITwo(),
               getUIThree(),
 
-
-
             ],
           ),
         ) ,
-
-
 
       ),
     );
@@ -77,7 +83,7 @@ class _StatisticPageState extends State<StatisticPage> {
         return Center(child: CircularProgressIndicator());
       } else if (state is ExpenseErrorState){
         return Center(child: Text(state.errMsg),);
-      } else if (state is ExpenseLoadedState){
+      } else if (state is ExpenseLoadedS      tate){
 
         filterDataDateWise(allExp: state.mExp);
 
@@ -234,49 +240,47 @@ class _StatisticPageState extends State<StatisticPage> {
 
 
   Widget getUIThree(){
-    return  Expanded(
-      child: BlocBuilder<ExpenseBloc,ExpenseState>(builder: (_,state){
-        if(state is ExpenseLoadingState){
-          return Center(child: CircularProgressIndicator());
-        } else if (state is ExpenseErrorState){
-          return Center(child: Text(state.errMsg),);
-        } else if (state is ExpenseLoadedState){
+    return  BlocBuilder<ExpenseBloc,ExpenseState>(builder: (_,state){
+      if(state is ExpenseLoadingState){
+        return Center(child: CircularProgressIndicator());
+      } else if (state is ExpenseErrorState){
+        return Center(child: Text(state.errMsg),);
+      } else if (state is ExpenseLoadedState){
 
-          filterDataCategoryWise(expenseList: state.mExp);
+        filterDataCategoryWise(expenseList: state.mExp);
 
-          return filteredCategory.isNotEmpty ?
+        return filteredCategory.isNotEmpty ?
 
-          ListView.builder(
+        ListView.builder(
 
-              itemCount: filteredCategory.length,
-              itemBuilder: (_,index){
+            itemCount: filteredCategory.length,
+            itemBuilder: (_,index){
 
-                final category = filteredCategory[index];
+              final category = filteredCategory[index];
 
-                return Card(
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: ListTile(
-                        leading: Image.asset(
-                          AppConstants.mCat.where((exp){
-                            return exp.id == category.id;
-                          }).toList()[0].imgPath,
-                          fit: BoxFit.contain,height: 30,width: 30,),
-                        title: Text(category.title, style: TextStyle(fontSize: 18)),
-                        trailing: Text(
-                          "Total: \$${category.amount.toStringAsFixed(2)}",
-                          style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),
-                        )));
+              return Card(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: ListTile(
+                      leading: Image.asset(
+                        AppConstants.mCat.where((exp){
+                          return exp.id == category.id;
+                        }).toList()[0].imgPath,
+                        fit: BoxFit.contain,height: 30,width: 30,),
+                      title: Text(category.title, style: TextStyle(fontSize: 18)),
+                      trailing: Text(
+                        "Total: \$${category.amount.toStringAsFixed(2)}",
+                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),
+                      )));
 
 
-              }) : Center(
-            child: Text("No Expenses yet!!"),
-          );
+            }) : Center(
+          child: Text("No Expenses yet!!"),
+        );
 
-        }
-        return Container();
+      }
+      return Container();
 
-      }),
-    );
+    });
   }
 /*
   Widget getUIThree(){
