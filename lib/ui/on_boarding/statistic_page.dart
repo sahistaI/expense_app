@@ -47,19 +47,17 @@ class _StatisticPageState extends State<StatisticPage> {
             children: [
               Expanded(child: getUIOne()),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      getUITwo(),
-                      getUIThree()
-                    ],
-                  ),
+                child: Column(
+                  children: [
+                    getUITwo(),
+                    getUIThree()
+                  ],
                 ),
               )
 
             ],
           ):
-          ListView(
+          Column(
             children: [
               getUIOne(),
               getUITwo(),
@@ -83,7 +81,7 @@ class _StatisticPageState extends State<StatisticPage> {
         return Center(child: CircularProgressIndicator());
       } else if (state is ExpenseErrorState){
         return Center(child: Text(state.errMsg),);
-      } else if (state is ExpenseLoadedS      tate){
+      } else if (state is ExpenseLoadedState){
 
         filterDataDateWise(allExp: state.mExp);
 
@@ -240,47 +238,49 @@ class _StatisticPageState extends State<StatisticPage> {
 
 
   Widget getUIThree(){
-    return  BlocBuilder<ExpenseBloc,ExpenseState>(builder: (_,state){
-      if(state is ExpenseLoadingState){
-        return Center(child: CircularProgressIndicator());
-      } else if (state is ExpenseErrorState){
-        return Center(child: Text(state.errMsg),);
-      } else if (state is ExpenseLoadedState){
-
-        filterDataCategoryWise(expenseList: state.mExp);
-
-        return filteredCategory.isNotEmpty ?
-
-        ListView.builder(
-
-            itemCount: filteredCategory.length,
-            itemBuilder: (_,index){
-
-              final category = filteredCategory[index];
-
-              return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                      leading: Image.asset(
-                        AppConstants.mCat.where((exp){
-                          return exp.id == category.id;
-                        }).toList()[0].imgPath,
-                        fit: BoxFit.contain,height: 30,width: 30,),
-                      title: Text(category.title, style: TextStyle(fontSize: 18)),
-                      trailing: Text(
-                        "Total: \$${category.amount.toStringAsFixed(2)}",
-                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),
-                      )));
-
-
-            }) : Center(
-          child: Text("No Expenses yet!!"),
-        );
-
-      }
-      return Container();
-
-    });
+    return  Expanded(
+      child: BlocBuilder<ExpenseBloc,ExpenseState>(builder: (_,state){
+        if(state is ExpenseLoadingState){
+          return Center(child: CircularProgressIndicator());
+        } else if (state is ExpenseErrorState){
+          return Center(child: Text(state.errMsg),);
+        } else if (state is ExpenseLoadedState){
+      
+          filterDataCategoryWise(expenseList: state.mExp);
+      
+          return filteredCategory.isNotEmpty ?
+      
+          ListView.builder(
+      
+              itemCount: filteredCategory.length,
+              itemBuilder: (_,index){
+      
+                final category = filteredCategory[index];
+      
+                return Card(
+                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: ListTile(
+                        leading: Image.asset(
+                          AppConstants.mCat.where((exp){
+                            return exp.id == category.id;
+                          }).toList()[0].imgPath,
+                          fit: BoxFit.contain,height: 30,width: 30,),
+                        title: Text(category.title, style: TextStyle(fontSize: 18)),
+                        trailing: Text(
+                          "Total: \$${category.amount.toStringAsFixed(2)}",
+                          style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),
+                        )));
+      
+      
+              }) : Center(
+            child: Text("No Expenses yet!!"),
+          );
+      
+        }
+        return Container();
+      
+      }),
+    );
   }
 /*
   Widget getUIThree(){
